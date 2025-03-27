@@ -20,6 +20,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientServices>();
 
+builder.Services.AddScoped<ITestRequestRepository, TestRequestRepository>();
+builder.Services.AddScoped<ITestRequestService, TestRequestService>();
+
+builder.Services.AddSingleton<IRedisPubSubService, RedisPubSubService>();
+
 // Auto mapper
 builder.Services.AddAutoMapper(typeof(PatientProfile).Assembly);
 
@@ -49,6 +54,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Registering hosted service for background listening
+builder.Services.AddHostedService<RedisSubscriberService>();
 
 var app = builder.Build();
 

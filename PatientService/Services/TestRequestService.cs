@@ -9,16 +9,22 @@ public class TestRequestService : ITestRequestService
 {
     private readonly ITestRequestRepository _requestRepository;
     private readonly IMapper _mapper;
-    public TestRequestService(ITestRequestRepository requestRepository, IMapper mapper)
+    private readonly IRedisPubSubService _redisPubSubService;
+    public TestRequestService(ITestRequestRepository requestRepository, IMapper mapper, IRedisPubSubService redisPubSubService)
     {
         _requestRepository = requestRepository;
         _mapper = mapper;
+        _redisPubSubService = redisPubSubService;
     }
 
     public async Task<TestRequest> CreateTestRequestAsync(TestRequestDto testRequestDto)
     {
         var testRequest = _mapper.Map<TestRequest>(testRequestDto);
         var createdTestRequest = await _requestRepository.CreateTestRequestAsync(testRequest);
-        return createdTestRequest;
+
+        if (createdTestRequest is not null)
+            await _redisPubSubService.PublishTestRequestAsync(testRequest.TestType!);
+
+        return createdTestRequest!;
     }
 }
