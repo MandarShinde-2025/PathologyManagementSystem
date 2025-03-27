@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using PatientService.DTOs;
-using PatientService.IRepositories;
-using PatientService.IServices;
 using PatientService.Models;
+using PatientService.Repositories;
 
 namespace PatientService.Services;
 
@@ -17,10 +16,11 @@ public class PatientServices : IPatientService
         _mapper = mapper;
     }
 
-    public async Task AddPatientAsync(PatientDto patientDto)
+    public async Task<int> AddPatientAsync(PatientDto patientDto)
     {
         var patient = _mapper.Map<PatientModel>(patientDto);
         await _patientRepository.AddPatientAsync(patient);
+        return patient.Id;
     }
 
     public async Task DeletePatientAsync(int id)
@@ -34,7 +34,7 @@ public class PatientServices : IPatientService
         return _mapper.Map<IEnumerable<PatientDto>>(patients);
     }
 
-    public async Task<PatientDto> GetPatientByIdAsync(int id)
+    public async Task<PatientDto?> GetPatientByIdAsync(int id)
     {
         var patient = await _patientRepository.GetPatientByIdAsync(id);
         return _mapper.Map<PatientDto>(patient);

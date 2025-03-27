@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientService", "PatientService\PatientService.csproj", "{45501176-01DC-405F-AA2F-F14E2459B5C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonLibrary", "CommonLibrary\CommonLibrary.csproj", "{457C6F01-59F8-45C9-8BDF-77CF6A7D1B2E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{45501176-01DC-405F-AA2F-F14E2459B5C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45501176-01DC-405F-AA2F-F14E2459B5C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45501176-01DC-405F-AA2F-F14E2459B5C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{457C6F01-59F8-45C9-8BDF-77CF6A7D1B2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{457C6F01-59F8-45C9-8BDF-77CF6A7D1B2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{457C6F01-59F8-45C9-8BDF-77CF6A7D1B2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{457C6F01-59F8-45C9-8BDF-77CF6A7D1B2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

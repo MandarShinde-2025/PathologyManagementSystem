@@ -2,6 +2,7 @@ using AuthenticationService.Data;
 using AuthenticationService.IServices;
 using AuthenticationService.Models;
 using AuthenticationService.Services;
+using CommonLibrary.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Adding jwt settings
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+var _jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 
 // Configuring DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -41,9 +46,9 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-        ValidAudience = builder.Configuration["JwtSettings:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]!)),
+        ValidIssuer = _jwtSettings!.Issuer,
+        ValidAudience = _jwtSettings!.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings!.Secret!)),
         ClockSkew = TimeSpan.Zero
     };
 });

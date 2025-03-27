@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PatientService.DTOs;
-using PatientService.IServices;
+using PatientService.Services;
 
 namespace PatientService.Controllers
 {
+    [Authorize(Roles = "Patient")]
     [Route("api/patient")]
     [ApiController]
     public class PatientController : ControllerBase
@@ -22,7 +24,7 @@ namespace PatientService.Controllers
             return Ok(patients);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetPatientByIdAsync")]
         public async Task<IActionResult> GetPatientByIdAsync(int id)
         {
             var patient = await _patientService.GetPatientByIdAsync(id);
@@ -32,8 +34,8 @@ namespace PatientService.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPatientAsync([FromBody] PatientDto patient)
         {
-            await _patientService.AddPatientAsync(patient);
-            return CreatedAtAction(nameof(GetPatientByIdAsync), new { id = patient.Id }, patient);
+            patient.Id = await _patientService.AddPatientAsync(patient);
+            return CreatedAtRoute(nameof(GetPatientByIdAsync), new { id = patient.Id }, patient);
         }
 
         [HttpPut("{id:int}")]

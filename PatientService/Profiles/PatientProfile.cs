@@ -9,5 +9,6 @@ public class PatientProfile: Profile
     public PatientProfile()
     {
         CreateMap<PatientModel, PatientDto>().ReverseMap();
+        CreateMap<TestRequest, TestRequestDto>().ReverseMap();
     }
 }

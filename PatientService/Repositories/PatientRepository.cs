@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PatientService.Data;
-using PatientService.IRepositories;
 using PatientService.Models;
 
 namespace PatientService.Repositories;
@@ -14,10 +13,11 @@ public class PatientRepository : IPatientRepository
         _context = context;
     }
 
-    public async Task AddPatientAsync(PatientModel patient)
+    public async Task<int> AddPatientAsync(PatientModel patient)
     {
         await _context.Patients.AddAsync(patient);
         await _context.SaveChangesAsync();
+        return patient.Id;
     }
 
     public async Task DeletePatientAsync(int id)

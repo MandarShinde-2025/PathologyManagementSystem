@@ -10,4 +10,5 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<PatientModel> Patients { get; set; }
+    public DbSet<TestRequest> TestRequests { get; set; }
 }

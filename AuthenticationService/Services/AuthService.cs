@@ -1,6 +1,8 @@
 ﻿using AuthenticationService.IServices;
 using AuthenticationService.Models;
+using CommonLibrary.Configurations;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,15 +15,16 @@ public class AuthService : IAuthService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly IConfiguration _configuration;
+    private readonly JwtSettings _jwtSettings;
 
     public AuthService(UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IOptions<JwtSettings> jwtSettings)
     {
         _userManager = userManager;
         _signInManager = signInManager;
-        _configuration = configuration;
+        _jwtSettings = jwtSettings.Value;
     }
 
     public async Task<AuthResponse> LoginAsync(LoginModel model)
@@ -47,7 +50,7 @@ public class AuthService : IAuthService
 
     public async Task<RegisterResponse> RegisterAsync(RegisterModel model)
     {
-        var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FullName = model.FullName };
+        var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FullName = model.FullName, Role = model.Role };
 
         var result = await _userManager.CreateAsync(user, model.Password!);
 
@@ -118,15 +121,16 @@ public class AuthService : IAuthService
             {
                 new Claim(ClaimTypes.Name, user.UserName!),
                 new Claim(ClaimTypes.Email, user.Email!),
+                new Claim("Role", user.Role!),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             }),
-            Expires = DateTime.Now.AddMinutes(Convert.ToInt32(_configuration["JwtSettings:ExpireMinutes"]!)),
+            Expires = DateTime.Now.AddMinutes(Convert.ToInt32(_jwtSettings.ExpireMinutes)),
             SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Secret"]!)),
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret!)),
                 SecurityAlgorithms.HmacSha256Signature)
         };
 
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Secret"]!));
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret!));
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
@@ -135,7 +139,7 @@ public class AuthService : IAuthService
             Success = true,
             Token = tokenHandler.WriteToken(token),
             RefreshToken = GetRefreshToken(),
-            Expiration = DateTime.Now.AddMinutes(Convert.ToInt32(_configuration["JwtSettings:ExpireMinutes"]!))
+            Expiration = DateTime.Now.AddMinutes(Convert.ToInt32(_jwtSettings.ExpireMinutes))
         };
         return authResponse;
     }
@@ -157,7 +161,7 @@ public class AuthService : IAuthService
             ValidateAudience = false,
             ValidateIssuer = false,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Secret"]!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret!)),
             ValidateLifetime = false
         };
 
