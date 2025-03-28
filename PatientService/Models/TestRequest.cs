@@ -8,4 +8,5 @@ public class TestRequest
     public string? TestType { get; set; }
     public string? TestResult { get; set; }
     public DateTime TestDate { get; set; }
+    public string? Status { get; set; }
 }

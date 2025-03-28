@@ -40,6 +40,12 @@ public class PatientRepository : IPatientRepository
         return await _context.Patients.FindAsync(id);
     }
 
+    public async Task<bool> RequestTestAsync(TestRequest request)
+    {
+        await _context.TestRequests.AddAsync(request);
+        return await _context.SaveChangesAsync() > 0;
+    }
+
     public async Task UpdatePatientAsync(PatientModel patient)
     {
         _context.Patients.Update(patient);

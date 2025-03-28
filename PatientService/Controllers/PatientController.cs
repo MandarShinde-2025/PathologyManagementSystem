@@ -38,6 +38,13 @@ namespace PatientService.Controllers
             return CreatedAtRoute(nameof(GetPatientByIdAsync), new { id = patient.Id }, patient);
         }
 
+        [HttpPost("request-test")]
+        public async Task<IActionResult> RequestTestAsync([FromBody] TestRequestDto requestDto)
+        {
+            var result = await _patientService.RequestTestAsync(requestDto);
+            return Ok("Test request created and collector notified.");
+        }
+
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdatePatientAsync(int id, [FromBody] PatientDto patient)
         {

@@ -2,6 +2,7 @@
 using PatientService.DTOs;
 using PatientService.Models;
 using PatientService.Repositories;
+using System.Text.Json;
 
 namespace PatientService.Services;
 
@@ -9,11 +10,13 @@ public class PatientServices : IPatientService
 {
     private readonly IPatientRepository _patientRepository;
     private readonly IMapper _mapper;
+    private readonly IRedisPubSubService _redisPubSubService;
 
-    public PatientServices(IPatientRepository patientRepository, IMapper mapper)
+    public PatientServices(IPatientRepository patientRepository, IMapper mapper, IRedisPubSubService redisPubSubService)
     {
         _patientRepository = patientRepository;
         _mapper = mapper;
+        _redisPubSubService = redisPubSubService;
     }
 
     public async Task<int> AddPatientAsync(PatientDto patientDto)
@@ -44,5 +47,14 @@ public class PatientServices : IPatientService
     {
         var patient = _mapper.Map<PatientModel>(patientDto);
         await _patientRepository.UpdatePatientAsync(patient);
+    }
+
+    public async Task<bool> RequestTestAsync(TestRequestDto requestDto)
+    {
+        var request = _mapper.Map<TestRequest>(requestDto);
+        request.Status = "Pending";
+        var result = await _patientRepository.RequestTestAsync(request);
+        await _redisPubSubService.PublishTestRequestAsync(JsonSerializer.Serialize(request));
+        return result;
     }
 }

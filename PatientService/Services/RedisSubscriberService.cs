@@ -4,7 +4,7 @@ using PatientService.SignalR;
 
 namespace PatientService.Services;
 
-public class RedisSubscriberService : BackgroundService
+public class RedisSubscriberService : BackgroundService, IHostedService
 {
     private readonly IRedisPubSubService _redisPubSubService;
     private readonly IHubContext<NotificationHub> _hubContext;
